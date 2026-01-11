@@ -10,6 +10,7 @@ const Login = () => {
 
   const [emailId,setEmailId]= useState("sari@gmail.com");
   const [password, setPassword]=useState("Sari@1290");
+  const [error, setError]=useState("");
   const dispatch= useDispatch();
   const navigate = useNavigate();
 
@@ -26,7 +27,7 @@ const Login = () => {
     navigate("/");
     }
     catch(err){
-      console.error(err);
+      setError(err?.response?.data|| "Something went wrong");
     }
   }
 
@@ -67,7 +68,7 @@ const Login = () => {
               />
             </label>
           </div>
-          
+          <p className='text-red-500'>{error}</p>
           <div class="flex justify-center mt-4">
              <button 
               className=" bg-purple-600 text-white w-40 px-4 py-2 rounded-md 
