@@ -19,6 +19,10 @@
 - login and see if your data is coming properly in the store
 - NavBar should update as soon as yser logs in
 - Refractor our code to add constants file+ create a components folder
+- you should not be access other routes without login
+- if taken is not present, redirect user to login page
+- logout
+- profile
 
 
 
