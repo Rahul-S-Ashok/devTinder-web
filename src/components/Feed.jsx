@@ -1,11 +1,59 @@
-import React from 'react'
+import axios from "axios";
+import React, { useEffect } from "react";
+import { BASE_URL } from "../utils/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { addFeed } from "../utils/feedSlice";
+import UserCard from "./UserCard";
 
 const Feed = () => {
-  return (
-    <div>
-      Feeddddd
-    </div>
-  )
-}
+  const dispatch = useDispatch();
+  const feed = useSelector((store) => store.feed);
 
-export default Feed
+  const getFeed = async () => {
+    try {
+      const res = await axios.get(BASE_URL + "/user/feed", {
+        withCredentials: true,
+      });
+
+      // ✅ FIX: backend already returns an array
+      dispatch(addFeed(res.data));
+    } catch (err) {
+      console.log("FEED ERROR 👉", err);
+      dispatch(addFeed([]));
+    }
+  };
+
+  useEffect(() => {
+    if (feed === null) {
+      getFeed();
+    }
+  }, [feed]);
+
+  // Loading State
+  if (feed === null) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+    );
+  }
+
+  // No users left
+  if (feed.length === 0) {
+    return (
+      <h1 className="flex justify-center m-52 text-3xl">
+        No more users!!!!
+      </h1>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-4 my-5">
+      {feed.map((user) => (
+        <UserCard key={user._id} user={user} />
+      ))}
+    </div>
+  );
+};
+
+export default Feed;

@@ -6,20 +6,19 @@ import { removeUser } from '../utils/userSlice';
 
 const Navbar = () => {
   const user = useSelector((store) => store.user);
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
    
-  const handleLogout=async()=>{
-    try{
-       await axios.post(BASE_URL + "/logout",{},{withCredentials:true});
-       dispatch(removeUser());
-       navigate("/login");
-
-
-    }catch (err){
+  const handleLogout = async () => {
+    try {
+      // ✅ FIX: correct logout endpoint
+      await axios.post(BASE_URL + "/auth/logout", {}, { withCredentials: true });
+      dispatch(removeUser());
+      navigate("/login");
+    } catch (err) {
       console.error(err);
     }
-  }
+  };
 
   return (
     <div className="navbar bg-base-300">
@@ -52,14 +51,28 @@ const Navbar = () => {
                   <span className="badge">New</span>
                 </Link>
               </li>
-              <li><a>Settings</a></li>
-              <li><a onClick={handleLogout}>Logout</a></li>
+
+              <li>
+                <Link to="/connections">
+                  Connections <span className="badge badge-error">💗</span>
+                </Link>
+              </li>
+
+              <li>
+                <Link to="/requests" className="justify-between hover:bg-gray-800 rounded-md p-2">
+                  Requests <span className="badge badge-warning">👁️</span>
+                </Link>
+              </li>
+
+              <li>
+                <a onClick={handleLogout}>Logout</a>
+              </li>
             </ul>
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

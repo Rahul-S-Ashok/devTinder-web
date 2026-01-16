@@ -23,7 +23,11 @@
 - if taken is not present, redirect user to login page
 - logout
 - profile
-
+- get the feed and add the store
+- build the usercard on feed
+- edit profile feature
+- show toast the flash message kano 
+- see all the connections
 
 
 
