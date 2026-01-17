@@ -11,11 +11,13 @@ const Feed = () => {
 
   const getFeed = async () => {
     try {
-      const res = await axios.get(BASE_URL + "/user/feed", {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `${BASE_URL}/user/feed?page=1&limit=50`,
+        {
+          withCredentials: true,
+        }
+      );
 
-      // ✅ FIX: backend already returns an array
       dispatch(addFeed(res.data));
     } catch (err) {
       console.log("FEED ERROR 👉", err);
@@ -24,12 +26,10 @@ const Feed = () => {
   };
 
   useEffect(() => {
-    if (feed === null) {
-      getFeed();
-    }
-  }, [feed]);
+    getFeed();
+  }, []);
 
-  // Loading State
+  // Loading
   if (feed === null) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
@@ -38,7 +38,7 @@ const Feed = () => {
     );
   }
 
-  // No users left
+  // No users
   if (feed.length === 0) {
     return (
       <h1 className="flex justify-center m-52 text-3xl">
