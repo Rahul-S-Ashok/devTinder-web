@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { BASE_URL } from "../utils/constants";
 import { removeUserFromFeed } from "../utils/feedSlice";
 
-const UserCard = ({ user, showActions = true }) => {
+const UserCard = ({ user }) => {
   const dispatch = useDispatch();
 
   if (!user) return null;
@@ -28,76 +28,52 @@ const UserCard = ({ user, showActions = true }) => {
       );
       dispatch(removeUserFromFeed(userId));
     } catch (error) {
-      console.log("REQUEST ERROR 👉", error);
+      console.log(error);
     }
   };
 
   return (
-    <div className="flex justify-center">
-      <div className="bg-base-300 w-[320px] rounded-xl shadow-xl overflow-hidden">
+    <div className="card grid-rows-1 bg-base-300 w-96 shadow-xl">
+      <figure>
+        <img src={photoUrl || "/default-avatar.png"} alt="photo" />
+      </figure>
 
-        {/* IMAGE */}
-        <div className="w-full h-[240px] bg-gray-700">
-          <img
-            src={photoUrl || "/default-avatar.png"}
-            alt="profile"
-            className="w-full h-full object-cover"
-          />
-        </div>
+      <div className="card-body">
+        <h2 className="card-title">{firstName} {lastName}</h2>
 
-        {/* BODY */}
-        <div className="p-4 text-white">
-          <h2 className="text-lg font-semibold">
-            {firstName} {lastName}
-          </h2>
+        {age && gender && <p>{age}, {gender}</p>}
+        <p>{about}</p>
 
-          {age && gender && (
-            <p className="text-sm text-gray-400">
-              {age}, {gender}
-            </p>
-          )}
-
-          {about && (
-            <p className="text-sm mt-2 line-clamp-2">
-              {about}
-            </p>
-          )}
-
-          {/* SKILLS */}
-          {skills?.length > 0 && (
-            <div className="mt-3">
-              <p className="text-sm font-semibold">Skills</p>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-blue-200 text-blue-800 px-2 py-0.5 rounded-md text-xs"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
+        {Array.isArray(skills) && skills.length > 0 && (
+          <div>
+            <h3 className="font-semibold">Skills:</h3>
+            <div className="flex flex-wrap gap-2">
+              {skills.map((skill, index) => (
+                <span
+                  key={index}
+                  className="bg-blue-200 text-blue-700 px-2 py-1 rounded-lg text-sm"
+                >
+                  {skill.trim()}
+                </span>
+              ))}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* ACTION BUTTONS (ONLY FOR FEED) */}
-          {showActions && (
-            <div className="flex justify-center gap-6 mt-4">
-              <button
-                className="px-4 py-1.5 text-sm rounded-lg bg-purple-600 hover:bg-purple-700"
-                onClick={() => handleSendRequest("ignored", _id)}
-              >
-                Ignore
-              </button>
+        <div className="flex justify-center gap-6 mt-6">
+          <button
+            className="btn bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg"
+            onClick={() => handleSendRequest("ignored", _id)}
+          >
+            Ignore
+          </button>
 
-              <button
-                className="px-4 py-1.5 text-sm rounded-lg bg-pink-500 hover:bg-pink-600"
-                onClick={() => handleSendRequest("interested", _id)}
-              >
-                Interested
-              </button>
-            </div>
-          )}
+          <button
+            className="btn bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-lg"
+            onClick={() => handleSendRequest("interested", _id)}
+          >
+            Interested
+          </button>
         </div>
       </div>
     </div>
