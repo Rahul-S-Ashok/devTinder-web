@@ -6,14 +6,19 @@ import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 
 const EditProfile = ({ user }) => {
-  const [firstName, setFirstname] = useState(user.firstName || "");
+  const dispatch = useDispatch();
+
+  // -------------------------------
+  // FORM STATE
+  // -------------------------------
+  const [firstName, setFirstName] = useState(user.firstName || "");
   const [lastName, setLastName] = useState(user.lastName || "");
   const [photoUrl, setPhotoUrl] = useState(user.photoUrl || "");
   const [age, setAge] = useState(user.age || "");
   const [gender, setGender] = useState(user.gender || "");
   const [about, setAbout] = useState(user.about || "");
 
-  // ✅ FIXED: keep skills as STRING for input
+  // skills as string for input
   const [skillsInput, setSkillsInput] = useState(
     Array.isArray(user.skills) ? user.skills.join(", ") : ""
   );
@@ -21,19 +26,16 @@ const EditProfile = ({ user }) => {
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
 
-  const dispatch = useDispatch();
-
   // -------------------------------
   // SAVE PROFILE
   // -------------------------------
   const saveProfile = async () => {
     setError("");
     try {
-      // Convert string → array only when saving
       const skillsArray = skillsInput
         .split(",")
         .map((skill) => skill.trim())
-        .filter((skill) => skill !== "");
+        .filter(Boolean);
 
       const res = await axios.patch(
         BASE_URL + "/profile/edit",
@@ -49,20 +51,23 @@ const EditProfile = ({ user }) => {
         { withCredentials: true }
       );
 
+      // backend returns updated user
       dispatch(addUser(res.data.data));
+
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    } catch (error) {
-      console.log("Save profile error:", error);
-      setError(error.response?.data?.message || "Something went wrong");
+    } catch (err) {
+      console.log("Save profile error:", err);
+      setError(err.response?.data?.message || "Something went wrong");
     }
   };
 
   return (
     <>
-      {/* Main Wrapper */}
+      {/* MAIN LAYOUT */}
       <div className="flex flex-col lg:flex-row justify-center items-start gap-6 my-10 px-4">
-        {/* Edit Form */}
+
+        {/* LEFT: EDIT FORM */}
         <div className="w-full max-w-md">
           <div className="card bg-base-300 shadow-xl">
             <div className="card-body">
@@ -73,7 +78,7 @@ const EditProfile = ({ user }) => {
                 <input
                   type="text"
                   value={firstName}
-                  onChange={(e) => setFirstname(e.target.value)}
+                  onChange={(e) => setFirstName(e.target.value)}
                   className="input input-bordered w-full"
                 />
               </label>
@@ -122,7 +127,7 @@ const EditProfile = ({ user }) => {
                 </select>
               </label>
 
-              {/* ✅ FIXED SKILLS INPUT */}
+              {/* SKILLS */}
               <label className="form-control w-full my-2">
                 <span className="label-text">Skills</span>
                 <input
@@ -143,43 +148,44 @@ const EditProfile = ({ user }) => {
                 />
               </label>
 
-              <p className="text-red-500 text-center">{error}</p>
+              {error && (
+                <p className="text-red-500 text-center mt-2">{error}</p>
+              )}
 
-              <div className="card-actions justify-center mt-2">
-                <button
-                  className="btn btn-primary bg-purple-600 px-4 py-2 rounded w-full sm:w-auto"
-                  onClick={saveProfile}
-                >
-                  Save Profile
-                </button>
+              <div className="mt-4">
+              <button className="btn bg-purple-600 hover:bg-purple-700 text-white w-full" onClick={saveProfile}
+  >
+                Save Profile
+              </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Preview Card */}
+        {/* RIGHT: PREVIEW CARD (NO ACTION BUTTONS) */}
         <div className="w-full max-w-sm">
           <UserCard
             user={{
               _id: user._id,
               firstName,
               lastName,
-              photoUrl: photoUrl,
+              photoUrl,
               about,
               age,
               gender,
               skills: skillsInput
                 .split(",")
                 .map((skill) => skill.trim())
-                .filter((skill) => skill !== ""),
+                .filter(Boolean),
             }}
+            showActions={false}
           />
         </div>
       </div>
 
-      {/* Toast */}
+      {/* SUCCESS TOAST */}
       {showToast && (
-        <div className="toast toast-top toast-center pt-20">
+        <div className="toast toast-top toast-center pt-20 z-50">
           <div className="alert alert-success">
             <span>Profile saved successfully</span>
           </div>
